@@ -1,0 +1,6 @@
+// Cache only public, static application assets; never cache customer or auth data.
+const CACHE='cupissa-advisors-shell-v3';
+const ASSETS=['./','./index.html','./assets/form.css','./assets/dark.css','./assets/config.js','./assets/app.js','./assets/products.js','./assets/install.js','./logo.png','./favicon.png','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('cupissa-advisors-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET'||new URL(r.url).origin!==self.location.origin)return;const urls=ASSETS.map(a=>new URL(a,self.registration.scope).href);if(r.mode==='navigate'&&urls.includes(new URL(r.url).origin+new URL(r.url).pathname)){e.respondWith(fetch(r).catch(()=>caches.match('./index.html')));return;}if(!urls.includes(r.url))return;e.respondWith(fetch(r).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(c=>c.put(r,copy));}return response;}).catch(()=>caches.match(r)));});
