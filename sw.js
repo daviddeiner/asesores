@@ -1,5 +1,5 @@
 // Cache only public, static application assets; never cache customer or auth data.
-const CACHE='cupissa-advisors-shell-v3';
+const CACHE='cupissa-advisors-shell-v4';
 const ASSETS=['./','./index.html','./assets/form.css','./assets/dark.css','./assets/config.js','./assets/app.js','./assets/products.js','./assets/install.js','./logo.png','./favicon.png','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('cupissa-advisors-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
